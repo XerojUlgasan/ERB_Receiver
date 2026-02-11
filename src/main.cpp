@@ -29,11 +29,17 @@ void setup() {
     ESP.restart();
   }
 
+  gps.begin();
+  lora.begin();
   lora.startReceive();
 }
 
 void loop() { 
 
+  delay(5000);
+  Serial.println("MY LOCATIONNNNNNNNN" + gps.locationToJsonString());
+
+  lora.sendPacket("LAMAOOOO");
   // if (WiFi.status() == WL_CONNECTED) {
   //   Serial.print("WiFi is connected to: ");
   //   Serial.println(WiFi.SSID());
