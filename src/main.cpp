@@ -33,17 +33,26 @@ void setup() {
   lora.begin();
   lora.startReceive();
 }
-
+int count = 0;
 void loop() { 
+  // Serial.println("MY LOCATIONNNNNNNNN" + gps.locationToJsonString());
 
-  delay(5000);
-  Serial.println("MY LOCATIONNNNNNNNN" + gps.locationToJsonString());
-
-  lora.sendPacket("LAMAOOOO");
+  // lora.sendPacket((String)count++);
+  // lora.sendPacket(gps.locationToJsonString());
   // if (WiFi.status() == WL_CONNECTED) {
   //   Serial.print("WiFi is connected to: ");
   //   Serial.println(WiFi.SSID());
   //   Serial.println(WiFi.localIP());
   // }
 
+  if(lora.packetReceived){
+    lora.packetReceived = false;
+
+    Serial.println("\nLoRa received a message...");
+    Serial.println("Received: " + lora.receivedMessage);
+
+    lora.startReceive();
+  }
+
 }
+

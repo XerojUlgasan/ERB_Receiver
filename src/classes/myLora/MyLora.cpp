@@ -5,6 +5,10 @@
 
 void onReceive(int packetSize);
 
+// Define static member variables
+String MyLora::receivedMessage = "";
+bool MyLora::packetReceived = false;
+
 MyLora::MyLora(int nss, int rst, int dio)
 {
     _nss = nss;
@@ -29,6 +33,8 @@ void MyLora::begin() {
     LoRa.enableCrc();
     LoRa.setSyncWord(0x1f);
 
+    LoRa.onReceive(onReceive);
+
     Serial.println("LoRa has started...");
 }
 
@@ -46,7 +52,6 @@ void MyLora::sendPacket(String message){
 }
 
 void MyLora::startReceive(){
-    LoRa.onReceive(onReceive);
     LoRa.receive();
     Serial.println("LoRa is listening...");
 
@@ -63,14 +68,13 @@ void MyLora::stopReceive(){
 
 void onReceive(int packetSize){
     if(packetSize == 0) return;
-    Serial.println("\nLoRa received a message...");
     
-    String msg = "";
+    MyLora::receivedMessage = "";
+
     while (LoRa.available()) {
-        msg += (char)LoRa.read();
+        MyLora::receivedMessage += (char)LoRa.read();
     }
 
-    Serial.println("Received: " + msg);
-
+    MyLora::packetReceived = true;
     return;
 }

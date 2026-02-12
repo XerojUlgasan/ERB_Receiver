@@ -80,6 +80,7 @@ bool initializeWebServer(const bool &deviceIsSender, Preferences &pref){
         }
         );
 
+        server.begin();
         return true;
     }
     catch(const std::exception& e)

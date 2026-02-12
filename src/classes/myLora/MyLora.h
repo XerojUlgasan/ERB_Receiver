@@ -5,6 +5,8 @@ class MyLora
 private:
     int _nss, _rst, _dio;
 public:
+    static String receivedMessage;
+    static bool packetReceived;
     MyLora(int nss, int rst, int dio);
     ~MyLora();
 
