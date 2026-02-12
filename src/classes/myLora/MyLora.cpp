@@ -4,10 +4,12 @@
 #include "MyLora.h"
 
 void onReceive(int packetSize);
+void onReceiveStruct(int packetSize);
 
 // Define static member variables
 String MyLora::receivedMessage = "";
 bool MyLora::packetReceived = false;
+GPSData MyLora::gpsdata = {};
 
 MyLora::MyLora(int nss, int rst, int dio)
 {
@@ -26,14 +28,15 @@ void MyLora::begin() {
         ESP.restart();
     }
 
-    LoRa.setSpreadingFactor(8);
-    LoRa.setSignalBandwidth(125E3);
-    LoRa.setCodingRate4(6);
-    LoRa.setTxPower(17);
+    LoRa.setSpreadingFactor(12);
+    LoRa.setSignalBandwidth(62.5E3);
+    LoRa.setCodingRate4(8);
+    LoRa.setTxPower(20);
     LoRa.enableCrc();
     LoRa.setSyncWord(0x1f);
+    LoRa.setPreambleLength(12);
 
-    LoRa.onReceive(onReceive);
+    LoRa.onReceive(onReceiveStruct);
 
     Serial.println("LoRa has started...");
 }
@@ -51,6 +54,16 @@ void MyLora::sendPacket(String message){
     return;
 }
 
+void MyLora::sendPacketStruct(GPSData &gpsData){
+    Serial.println("Sending Struct....");
+
+    LoRa.beginPacket();
+    LoRa.write((uint8_t*)&gpsData, sizeof(gpsData));
+    LoRa.endPacket();
+
+    Serial.println("Lora Send Struct");
+}
+
 void MyLora::startReceive(){
     LoRa.receive();
     Serial.println("LoRa is listening...");
@@ -65,6 +78,10 @@ void MyLora::stopReceive(){
     return;
 }
 
+void MyLora::printDetails() {
+    Serial.println(LoRa.packetRssi());
+    Serial.println(LoRa.packetSnr());
+}
 
 void onReceive(int packetSize){
     if(packetSize == 0) return;
@@ -78,3 +95,33 @@ void onReceive(int packetSize){
     MyLora::packetReceived = true;
     return;
 }
+
+void onReceiveStruct(int packetSize){    
+    Serial.print("Received packet size: ");
+    Serial.print(packetSize);
+    Serial.print(" bytes, Expected: ");
+    Serial.print(sizeof(GPSData));
+    Serial.println(" bytes");
+    
+    try
+    {
+        if(packetSize == sizeof(GPSData)) {
+            LoRa.readBytes((uint8_t*)&MyLora::gpsdata, sizeof(MyLora::gpsdata));
+            MyLora::packetReceived = true;
+            Serial.println("Struct received successfully!");
+        } else {
+            Serial.println("Packet size mismatch! Ignoring packet.");
+            while(LoRa.available()) {
+                LoRa.read();
+            }
+        }
+    }
+    catch(const std::exception& e)
+    {
+        Serial.print("Error receiving struct: ");
+        Serial.println(e.what());
+    }
+}
+
+
+

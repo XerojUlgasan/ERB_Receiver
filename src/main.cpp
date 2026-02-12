@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <esp_task_wdt.h>
 
+#include "./classes/GPSData.h"
 #include "webServerHandler.h"
 #include "classes/myGps/MyGps.h"
 #include "classes/receiverProfile/ReceiverProfile.h"
@@ -49,8 +50,15 @@ void loop() {
     lora.packetReceived = false;
 
     Serial.println("\nLoRa received a message...");
-    Serial.println("Received: " + lora.receivedMessage);
 
+    Serial.println("LAT : " + (String)lora.gpsdata.lat);
+    Serial.println("LON : " + (String)lora.gpsdata.lon);
+    Serial.println("ALT : " + (String)lora.gpsdata.alt);
+    Serial.println("SAT : " + (String)lora.gpsdata.sat);
+    Serial.println("SPD : " + (String)lora.gpsdata.spd);
+    Serial.println("ISV : " + (String)lora.gpsdata.isValid);
+
+    lora.printDetails();
     lora.startReceive();
   }
 
