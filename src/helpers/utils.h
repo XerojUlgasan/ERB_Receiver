@@ -1,7 +1,39 @@
 #include <Arduino.h>
 #include <ArduinoJson.h>
 #include <vector>
-#include <WiFi.h>
+#include <WiFi.h> 
+
+#include "./classes/GPSData.h"
+#include "../apiRequests.h"
+
+void createUploadPingTask(void *pvParameters) {
+  Serial.println("Task Created...");
+  
+  delay(500);
+
+  GPSData* dataPtr = (GPSData*)pvParameters;
+  uploadDetectedPing(*dataPtr);
+
+  delete dataPtr;
+  Serial.println("Task finished. Deleting...");
+  vTaskDelete(NULL);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 bool parseJsonToSenderProfile(String &jsonStr, String &fn, String &add, String &con_num, String &em_con_per, String &em_con_num){
   JsonDocument doc;

@@ -10,6 +10,7 @@
 #include "classes/myLora/MyLora.h"
 
 const bool deviceIsSender = false;
+const String device_id = "ERBriwan-002";
 
 Preferences pref;
 
@@ -19,7 +20,9 @@ MyLora lora(5, 14, 26);
 
 void setup() {
   esp_task_wdt_init(15, true);
-
+  
+  WiFi.mode(WIFI_AP_STA);  // Enable both AP and Station mode
+  WiFi.begin("Ulgasan", "XerojHaha123?");
   WiFi.softAP("ERBriwan_Receiver", "PitelBurat123");
   Serial.begin(115200);
 
@@ -40,6 +43,7 @@ void loop() {
 
   // lora.sendPacket((String)count++);
   // lora.sendPacket(gps.locationToJsonString());
+
   // if (WiFi.status() == WL_CONNECTED) {
   //   Serial.print("WiFi is connected to: ");
   //   Serial.println(WiFi.SSID());
@@ -54,9 +58,21 @@ void loop() {
     Serial.println("LAT : " + (String)lora.gpsdata.lat);
     Serial.println("LON : " + (String)lora.gpsdata.lon);
     Serial.println("ALT : " + (String)lora.gpsdata.alt);
-    Serial.println("SAT : " + (String)lora.gpsdata.sat);
     Serial.println("SPD : " + (String)lora.gpsdata.spd);
-    Serial.println("ISV : " + (String)lora.gpsdata.isValid);
+    Serial.println("DID : " + (String)lora.gpsdata.device_id);
+    Serial.println("PNC : " + (String)lora.gpsdata.ping_count);
+    Serial.println("CLICK : " + (String)lora.gpsdata.isClick);
+    Serial.println("CANCEL : " + (String)lora.gpsdata.isCancellation);
+
+    GPSData* gpsCopy = new GPSData(lora.gpsdata);
+    xTaskCreate(
+      createUploadPingTask,
+      "one time upload task",
+      16384,
+      gpsCopy,
+      1,
+      NULL
+    );
 
     lora.printDetails();
     lora.startReceive();

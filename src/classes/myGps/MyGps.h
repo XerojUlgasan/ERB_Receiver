@@ -20,5 +20,5 @@ public:
     void getLocation();
     String locationToJsonString();
     JsonDocument locationToJson();
-    GPSData getGPSDataStuct();
+    GPSData getGPSDataStuct(String device_id, int& ping_count);
 };
