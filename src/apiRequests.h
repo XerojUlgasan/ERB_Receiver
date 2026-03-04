@@ -10,7 +10,7 @@ void uploadDetectedPing(GPSData& data) {
         return;
     }
 
-    const String api_url = "https://erbriwan-api.onrender.com/device/recordPing";
+    const String api_url = "https://er-briwan-api.vercel.app/device/recordPing";
 
     WiFiClientSecure client;
     client.setInsecure();
@@ -39,9 +39,10 @@ void uploadDetectedPing(GPSData& data) {
     doc["ping_count"] = data.ping_count;
     doc["is_click"] = data.isClick;
     doc["is_cancel"] = data.isCancellation;
+    doc["emergency_id"] = data.emergency_id;
 
     serializeJson(doc, jsonStr);
-    
+    Serial.println("SENDING : " + jsonStr);
     Serial.println("Sending POST request...");
     int respcode = http.POST(jsonStr);
 

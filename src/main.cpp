@@ -63,7 +63,10 @@ void loop() {
     Serial.println("PNC : " + (String)lora.gpsdata.ping_count);
     Serial.println("CLICK : " + (String)lora.gpsdata.isClick);
     Serial.println("CANCEL : " + (String)lora.gpsdata.isCancellation);
-    Serial.println("ACCESS : " + (String)lora.gpsdata.access_key);
+    Serial.println("EMERGENCY ID : " + (String)lora.gpsdata.emergency_id);
+    Serial.println("LOC VALID : " + (String)lora.gpsdata.isLocValid);
+    Serial.println("ALT VALID : " + (String)lora.gpsdata.isAltValid);
+    Serial.println("SPD VALID : " + (String)lora.gpsdata.isSpdValid);
 
     GPSData* gpsCopy = new GPSData(lora.gpsdata);
     xTaskCreate(
